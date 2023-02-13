@@ -41,7 +41,6 @@ public class Parser {
         Scanner sc = new Scanner(System.in);
         StringBuilder inputString = new StringBuilder();
 
-        //inputString.append(sc.nextLine());
         sc.useDelimiter("EOF");
         while(sc.hasNext()){
             inputString.append(sc.next());
@@ -52,7 +51,7 @@ public class Parser {
         String input = inputString.toString();
         input = input.replaceAll("#.*", " ");
         
-        //Cleaning String
+        //Cleaning input
         input = input.replaceAll(":", " : ");
         input = input.replaceAll(";", " ; ");
         input = input.trim();
