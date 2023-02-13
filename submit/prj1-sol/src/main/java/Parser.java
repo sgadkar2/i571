@@ -41,8 +41,11 @@ public class Parser {
         Scanner sc = new Scanner(System.in);
         StringBuilder inputString = new StringBuilder();
 
-        while(sc.hasNextLine()){
-            inputString.append(sc.nextLine());
+        //inputString.append(sc.nextLine());
+        //sc.useDelimiter("\\t");
+        while(true){
+            inputString.append(sc.next());
+            break;
         }
         sc.close();
         
