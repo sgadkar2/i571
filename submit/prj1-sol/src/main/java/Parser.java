@@ -42,7 +42,7 @@ public class Parser {
         StringBuilder inputString = new StringBuilder();
 
         //inputString.append(sc.nextLine());
-        sc.useDelimiter("END");
+        sc.useDelimiter("EOF");
         while(sc.hasNext()){
             inputString.append(sc.next());
             break;
@@ -130,6 +130,7 @@ public class Parser {
             if(validInput && Arrays.asList(reservedList).contains(tok.getLexeme())){
                 System.err.println("Expecting identifier");
                 validInput = false;
+		System.exit(-1);
             }
             
         }
@@ -165,9 +166,15 @@ public class Parser {
             field();
         }else if(tok.getLexeme().isBlank()){
             //System.out.println("Token is Missing");
-            System.err.println("; is Missing");
+	    if(!inputList[index].equals(";")){
+		System.err.println("; is Missing");
+		validInput = false;
+		System.exit(-1);
+	    }
+	    /*System.err.println("; is Missing");
             validInput = false;
-            return;
+	    System.exit(-1);*/
+            //return;
         }
         else{
             declaration();
@@ -179,13 +186,13 @@ public class Parser {
         if(peek("number")){
             tok.setKind("type");
             consume("number");
-            /*tok.setKind(";");
-            consume(";");*/
+	    tok.setKind(";");
+	    consume(";");
         }else if(peek("string")){
             tok.setKind("type");
             consume("string");
-            /*tok.setKind(";");
-            consume(";");*/
+            tok.setKind(";");
+	    consume(";");
         }else{
             tok.setKind("type");
             consume("record");
@@ -209,7 +216,8 @@ public class Parser {
             tok.setLexeme(inputList[index]);*/
             System.err.println("Expecting "+tok.getKind()+" but got "+input);
             validInput = false;
-            return;
+	    System.exit(-1);
+            //return;
         }
         if(tok.getLexeme().equals(input)){
             
@@ -245,6 +253,7 @@ public class Parser {
             if(validInput){
                 System.err.println("Expecting "+tok.getKind()+" but got "+tok.getLexeme());
                 validInput = false;
+		System.exit(-1);
             }
             
         }
