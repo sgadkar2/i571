@@ -42,8 +42,8 @@ public class Parser {
         StringBuilder inputString = new StringBuilder();
 
         //inputString.append(sc.nextLine());
-        //sc.useDelimiter("\\t");
-        while(true){
+        sc.useDelimiter("END");
+        while(sc.hasNext()){
             inputString.append(sc.next());
             break;
         }
@@ -79,12 +79,17 @@ public class Parser {
         //System.out.println(response.toString());
         if(validInput){
             try{
+		//System.out.println(response.toString());
                 System.out.println(new JSONArray(response.toString()).toString(4));
+		System.exit(0);
             }catch(Exception ex){
                 System.err.println("Invalid token : "+tok.getLexeme());
+		System.exit(-1);
             }
             
-        }
+        }else{
+	    System.exit(-1);
+	}    
         
         //return jsonString;
     }
