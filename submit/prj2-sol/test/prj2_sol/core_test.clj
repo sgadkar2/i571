@@ -40,34 +40,34 @@
 
 ;;TESTS
 
-(skip-deftest test-items-total1
+(deftest test-items-total1
   (test-items-total items-total1))
 
-(skip-deftest test-items-with-category1
+(deftest test-items-with-category1
   (test-items-with-category items-with-category1))
 
-(skip-deftest test-items-total2
+(deftest test-items-total2
   (test-items-total items-total2))
 
-(skip-deftest test-item-skus
+(deftest test-item-skus
   (testing "item-skus"
     (is (= (item-skus (list ITEM-1 ITEM-3)) (list :cw123 :ap723)))
     (is (= (item-skus ()) ()))))
 
-(skip-deftest test-expensive-item-skus
+(deftest test-expensive-item-skus
   (testing "expensive-item-skus"
     (is (= (expensive-item-skus ITEMS 12) (list :cw123 :ap273)))
     (is (= (expensive-item-skus ITEMS 20) (list :ap273)))
     (is (= (expensive-item-skus ITEMS 30) ()))))
 
-(skip-deftest test-items-total3
+(deftest test-items-total3
   (test-items-total items-total3))
 
-(skip-deftest test-items-with-category2
+(deftest test-items-with-category2
   (test-items-with-category items-with-category2))
 
 
-(skip-deftest test-item-category-n-units
+(deftest test-item-category-n-units
   (testing "item-category-n-units"
     (is (= (item-category-n-units ITEMS) 12))
     (is (= (item-category-n-units ITEMS :food) 1))
