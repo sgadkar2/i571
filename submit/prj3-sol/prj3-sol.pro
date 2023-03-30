@@ -245,8 +245,6 @@ left_plus(LeftUnrestrictedPlusExpr + RightUnrestrictedPlusExpr, LeftPlusExpr) :-
 left_plus(LeftUnrestrictedPlusExpr + _RightUnrestrictedPlusExpr, _LeftPlusExpr) :-
     left_plus(LeftUnrestrictedPlusExpr, _InvalidPlusExpr).
 
-left_plus(_, _InvalidPlusExpr) :-
-    false.
 
 :- begin_tests(left_plus, []).
 test(int, nondet) :-
