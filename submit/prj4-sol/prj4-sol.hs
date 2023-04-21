@@ -37,7 +37,11 @@ items = [ item1, item2, item3, item4, item5, item6 ]
 -- items which have itemCategory == category.
 -- Restriction: MUST use recursion
 categoryItems :: [OrderItem] -> Category -> [OrderItem]
-categoryItems _ _ = error "TODO"
+categoryItems [] _  = []
+categoryItems (item:items) category
+ | itemCategory item == category = item : categoryItems items category
+ | otherwise = categoryItems items category
+--categoryItems _ _ = error "TODO"
 
 testCategoryItems = do
   assertEq "categoryItems cookware"
@@ -58,7 +62,9 @@ testCategoryItems = do
 -- comprCategoryItems has same spec as categoryItems.
 -- Restriction: MUST be implemented using list comprehension.
 comprCategoryItems :: [OrderItem] -> Category -> [OrderItem]
-comprCategoryItems _ _ = error "TODO"
+comprCategoryItems [] _ = []
+comprCategoryItems items category = [item | item <- items, itemCategory item == category]
+--comprCategoryItems _ _ = error "TODO"
 
 testComprCategoryItems = do
   assertEq "comprCategoryItems cookware"
@@ -79,7 +85,8 @@ testComprCategoryItems = do
 -- Restriction: May NOT use recursion or list comprehension.
 -- Hint: Use fromIntegral n to convert Int n to Float
 itemsTotal :: [ OrderItem ] -> Float
-itemsTotal _ = error "TODO"
+itemsTotal items = foldl (\acc item -> acc + (fromIntegral (itemNUnits item) * itemUnitPrice item)) 0.0 items
+--itemsTotal _ = error "TODO"
 
 testItemsTotal = do
   assertEq "itemsTotal all"
@@ -101,7 +108,8 @@ testItemsTotal = do
 -- Restriction: May NOT use recursion or list comprehension
 -- Hint: [1..n] generates a list of the integers from 1 to n
 factorial :: Integer -> Integer
-factorial _ = error "TODO"
+factorial n = foldl (*) 1 [1..n]
+--factorial _ = error "TODO"
 
 testFactorial = do
   assertEq "factorial 0" (factorial 0) 1
@@ -117,7 +125,8 @@ testFactorial = do
 -- Return list of all factorials 1, 1, 2, 6, 24, ...
 -- Hint: Use earlier factorial function
 factNums :: [Integer]
-factNums = error "TODO"
+factNums = map factorial [0..]
+--factNums = error "TODO"
 
 testFactNums = do
   assertEq "factNums first 6" (take 6 factNums) [1, 1, 2, 6, 24, 120]
@@ -140,7 +149,11 @@ type AssocList a b = [(a, b)]
 -- should return (Just value) else it should return Nothing
 -- Hint: recurse through assocList testing each pair against key
 assoc :: Eq a => a -> AssocList a b -> Maybe b
-assoc _ _ = error "TODO"
+assoc _ [] = Nothing
+assoc key ((k, v) : xs)
+ | key == k = Just v
+ | otherwise = assoc key xs
+--assoc _ _ = error "TODO"
 
 testAssoc = do
   assertEq "assoc first"
@@ -178,7 +191,8 @@ type Binding = (VarName, Term)
 -- of each binding.
 -- Hint: use sortBy and compare
 sortBindings :: [Binding] -> [Binding]
-sortBindings _ = error "TODO"
+sortBindings bindings = sortBy (\ (varName1, _) (varName2, _) -> compare varName1 varName2) bindings
+--sortBindings _ = error "TODO"
 
 testSortBindings = do
   assertEq "empty" (sortBindings []) []
@@ -223,7 +237,12 @@ testSortBindings = do
 --        When term is a Struct, simply return the term resulting from
 --        applying substTerm over the arguments.
 substTerm :: Term -> [Binding] -> Term
-substTerm _ _ = error "TODO"
+substTerm (Var varName) bindings = case assoc varName bindings of
+                                     Just term -> substTerm term bindings
+                                     Nothing -> Var varName
+
+substTerm (Struct atom terms) bindings = Struct atom (map (\term -> substTerm term bindings) terms)
+--substTerm _ _ = error "TODO"
 
 testSubstTerm =
   let bindings = [
@@ -253,7 +272,9 @@ testSubstTerm =
 -- (normalizeBindings binding) returns sorted bindings with each
 -- term in bindings replaced by (substTerm term bindings).
 normalizeBindings :: [Binding] -> [Binding]
-normalizeBindings _ = error "TODO"
+normalizeBindings bindings = sortBindings (map (\(var,term) -> (var, substTerm term bindings)) bindings)
+
+--normalizeBindings _ = error "TODO"
 
 testNormalizeBindings =   
   let bindings = [
@@ -284,7 +305,34 @@ testNormalizeBindings =
 --        possible cases for the two lists.
 --        Again, use case expressions to handle Maybe results.
 unify :: Term -> Term -> Maybe [Binding]
-unify _ _ = error "TODO"
+unify t1 t2 = unifyAuxFunction t1 t2 []
+
+unifyAuxFunction :: Term -> Term -> [Binding] -> Maybe [Binding]
+unifyAuxFunction (Var v1) (Var v2) bs
+  | v1 == v2 = Just bs
+  | otherwise = Just $ normalizeBindings ((v1, Var v2) : bs)
+unifyAuxFunction (Var v1) t2 bs =
+  case lookup v1 bs of
+    Just t1 -> unifyAuxFunction t1 t2 bs
+    Nothing -> Just $ normalizeBindings ((v1, t2) : bs)
+unifyAuxFunction t1 (Var v2) bs =
+  case lookup v2 bs of
+    Just t2 -> unifyAuxFunction t1 t2 bs
+    Nothing -> Just $ normalizeBindings ((v2, t1) : bs)
+unifyAuxFunction (Struct n1 ts1) (Struct n2 ts2) bs
+  | n1 == n2 = unifyList ts1 ts2 bs
+  | otherwise = Nothing
+
+unifyList :: [Term] -> [Term] -> [Binding] -> Maybe [Binding]
+unifyList [] [] bs = Just bs
+unifyList (t1:ts1) (t2:ts2) bs =
+  case unifyAuxFunction t1 t2 bs of
+    Nothing -> Nothing
+    Just bs' -> unifyList ts1 ts2 bs'
+unifyList _ _ _ = Nothing
+
+
+--unify _ _ = error "TODO"
 
 testUnify = do
   assertEq "unify: X = Y => [(X, Y)]"
